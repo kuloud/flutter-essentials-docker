@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM openjdk:8
 
 LABEL maintainer="xkuloud@gmail.com"
 

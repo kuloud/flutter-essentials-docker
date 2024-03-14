@@ -30,7 +30,3 @@ ENV PATH "$PATH:/home/developer/flutter/bin"
 
 # Run basic check to download Dark SDK
 RUN flutter doctor
-
-## Clear stuff
-RUN apt autoremove -y \
-  && rm -rf /var/lib/apt/lists/*

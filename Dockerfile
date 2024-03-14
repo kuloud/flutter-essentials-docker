@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:11
 
 LABEL maintainer="xkuloud@gmail.com"
 
@@ -18,12 +18,12 @@ RUN yes | apt-get install \
   npm
   
 # Install fastlane
-RUN gem install fastlane -NV \
-  && fastlane --version
+# RUN gem install fastlane -NV \
+#   && fastlane --version
 
 # Install firebase cli
-RUN npm install -g firebase-tools \
-  && firebase --version
+# RUN npm install -g firebase-tools \
+#   && firebase --version
 
 
 # Install Flutter

@@ -2,12 +2,14 @@ FROM ubuntu:22.04
 LABEL maintainer="kuloud(xkuloud@gmail.com)"
 
 # Prerequisites
-RUN apt update && apt install -y curl git unzip xz-utils zip libglu1-mesa openjdk-17-jdk wget
+RUN apt update && apt install -y curl git unzip xz-utils zip libglu1-mesa openjdk-17-jdk wget clang cmake ninja-build pkg-config
 
 # Set up new user
 RUN useradd -ms /bin/bash developer
 USER developer
 WORKDIR /home/developer
+
+RUN git config --global --add safe.directory /home/developer
 
 # Prepare Android directories and system variables
 RUN mkdir -p Android/sdk/cmdline-tools

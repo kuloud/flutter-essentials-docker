@@ -16,7 +16,7 @@ RUN yes | apt install \
   build-essential \
   ruby-full \
   rubygems \
-  nodejs \
+  # nodejs \
   npm
 
 RUN node -v \

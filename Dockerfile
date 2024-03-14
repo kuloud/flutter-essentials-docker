@@ -9,8 +9,6 @@ RUN useradd -ms /bin/bash developer
 USER developer
 WORKDIR /home/developer
 
-RUN git config --global --add safe.directory /home/developer
-
 # Prepare Android directories and system variables
 RUN mkdir -p Android/sdk/cmdline-tools
 ENV ANDROID_SDK_ROOT /home/developer/Android/sdk
@@ -29,6 +27,19 @@ ENV PATH "$PATH:/home/developer/Android/sdk/platform-tools"
 # Download Flutter SDK
 RUN git clone https://github.com/flutter/flutter.git
 ENV PATH "$PATH:/home/developer/flutter/bin"
+RUN git config --global --add safe.directory /home/developer/flutter
+
+ENV FLUTTER_ROOT="/home/developer/flutter"
+
+### Add flutter executable to path
+ENV PATH="${PATH}:${FLUTTER_ROOT}/bin"
+
+### Make it easy to use other Dart and Pub packages
+ENV DART_SDK="${FLUTTER_ROOT}/bin/cache/dart-sdk"
+ENV PUB_CACHE=${FLUTTER_ROOT}/.pub-cache
+ENV PATH="${PATH}:${DART_SDK}/bin:${PUB_CACHE}/bin"
+
+RUN flutter config --android-sdk /home/developer/Android/sdk/
 
 # Run basic check to download Dark SDK
 RUN flutter doctor

@@ -23,7 +23,6 @@ RUN mv cmdline-tools Android/sdk/cmdline-tools/latest
 RUN cd Android/sdk/cmdline-tools/latest/bin && yes | ./sdkmanager --licenses
 # "build-tools;34.0.0" "patcher;v4" "sources;android-34"
 RUN cd Android/sdk/cmdline-tools/latest/bin && ./sdkmanager "platform-tools" "platforms;android-34" 
-RUN cd Android/sdk/cmdline-tools/latest/bin && ./sdkmanager --install "build-tools;34.0.0" "patcher;v4"
 ENV PATH "$PATH:/home/developer/Android/sdk/platform-tools"
 
 # Download Flutter SDK
@@ -31,9 +30,9 @@ RUN git clone https://github.com/flutter/flutter.git
 ENV PATH "$PATH:/home/developer/flutter/bin"
 RUN git config --global --add safe.directory /home/developer/flutter
 
-ENV AAPT_HOME "/home/developer/Android/sdk/build-tools/34.0.0"
+# ENV AAPT_HOME "/home/developer/Android/sdk/build-tools/34.0.0"
 
-ENV PATH=$PATH:$AAPT_HOME
+# ENV PATH=$PATH:$AAPT_HOME
 
 ENV FLUTTER_ROOT="/home/developer/flutter"
 

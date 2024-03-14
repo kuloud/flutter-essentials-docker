@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:11
 
 LABEL maintainer="xkuloud@gmail.com"
 
@@ -7,24 +7,14 @@ ENV LANG en_US.UTF-8
 # Update & Install basics
 RUN apt-get update
 RUN yes | apt-get install \
-  locales \
-  libstdc++6 \
-  lib32stdc++6 \
-  libglu1-mesa \
-  build-essential \
-  ruby-full \
-  rubygems \
-  nodejs \
-  npm
-  
-# Install fastlane
-RUN gem install fastlane -NV \
-  && fastlane --version
-
-# Install firebase cli
-RUN npm install -g firebase-tools \
-  && firebase --version
-
+  clang \
+  cmake \
+  git \
+  ninja-build \
+  pkg-config \
+  libgtk-3-dev \
+  liblzma-dev \
+  libstdc++-12-dev
 
 # Install Flutter
 

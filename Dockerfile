@@ -1,6 +1,6 @@
 FROM openjdk:8
 
-MAINTAINER Niklas Lehnfeld <niklas@lehnfeld.net>
+LABEL maintainer="xkuloud@gmail.com"
 
 ENV LANG en_US.UTF-8
 
@@ -29,7 +29,7 @@ RUN npm install -g firebase-tools \
 # Install Flutter
 
 ## Setting variables for android download
-ARG ANDROID_SDK_TOOLS="4333796"
+ARG ANDROID_SDK_TOOLS="8092744"
 ENV ANDROID_SDK_URL="https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip"
 ENV ANDROID_SDK_ROOT="/usr/local/android"
 ENV ANDROID_SDK_ARCHIVE="/tmp/android.zip"
@@ -47,7 +47,7 @@ RUN yes "y" | ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager "tools" \
   "patcher;v4" 
 
 ## Download and accept platform-tools 
-ARG ANDROID_SDK_MAJOR=28
+ARG ANDROID_SDK_MAJOR=31
 RUN yes "y" | ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager "platforms;android-${ANDROID_SDK_MAJOR}" 
 
 ## Download and accept build-tools
@@ -58,7 +58,7 @@ RUN yes "y" | ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager "build-tools;${ANDROID_SD
 
 ## Setting Flutter Variables
 ARG FLUTTER_SDK_CHANNEL="stable"
-ARG FLUTTER_SDK_VERSION="1.20.2"
+ARG FLUTTER_SDK_VERSION="3.19.3"
 ENV FLUTTER_ROOT="/usr/local/flutter"
 ENV FLUTTER_SDK_ARCHIVE="/tmp/flutter.tar.xz"
 ENV FLUTTER_SDK_URL="https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_${FLUTTER_SDK_VERSION}-${FLUTTER_SDK_CHANNEL}.tar.xz"

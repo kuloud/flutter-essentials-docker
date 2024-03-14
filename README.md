@@ -4,13 +4,10 @@
 
 Docker container containing all essential dependencies for building and distributing a Flutter app.
 
-flutter version: `3.19.3`
-
 
 ## Includes
 
-- Android SDK for building 
-- Flutter SDK for building
-- Fastlane cli for signing 
-- Firebase cli for distribution
+- openjdk@17 for building
+- Android SDK 34 for building 
+- Flutter SDK 3.19.3 for building
 

@@ -1,102 +1,36 @@
-FROM openjdk:11
+FROM ubuntu:22.04
+LABEL maintainer="kuloud(xkuloud@gmail.com)"
 
-LABEL maintainer="xkuloud@gmail.com"
+# Prerequisites
+RUN apt update && apt install -y curl git unzip xz-utils zip libglu1-mesa openjdk-17-jdk wget
 
-ENV LANG en_US.UTF-8
+# Set up new user
+RUN useradd -ms /bin/bash developer
+USER developer
+WORKDIR /home/developer
 
-# Update & Install basics
-RUN apt update
-RUN yes | apt install curl gnupg
-RUN curl -sL https://deb.nodesource.com/setup_20.x | bash
-RUN yes | apt install \
-  locales \
-  libstdc++6 \
-  lib32stdc++6 \
-  libglu1-mesa \
-  build-essential \
-  ruby-full \
-  rubygems \
-  # nodejs \
-  npm
+# Prepare Android directories and system variables
+RUN mkdir -p Android/sdk/cmdline-tools
+ENV ANDROID_SDK_ROOT /home/developer/Android/sdk
+RUN mkdir -p .android && touch .android/repositories.cfg
 
-RUN node -v \
-  && npm -v
-
-# Install fastlane
-RUN gem install fastlane -NV \
-  && fastlane --version
-
-# Install firebase cli
-RUN npm install -g firebase-tools \
-  && firebase --version
-
-
-# Install Flutter
-
-## Setting variables for android download
-# ${ANDROID_SDK_TOOLS}
-# https://dl.google.com/android/repository/sdk-tools-linux-8092744.zip
+# Set up Android SDK
 ARG ANDROID_SDK_TOOLS="11076708"
-ENV ANDROID_SDK_URL="https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip"
-ENV ANDROID_SDK_ROOT="/usr/local/android"
-ENV ANDROID_SDK_ARCHIVE="/tmp/android.zip"
+RUN wget -O commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
+RUN unzip commandlinetools.zip && rm commandlinetools.zip
+RUN mv cmdline-tools Android/sdk/cmdline-tools/latest
+RUN cd Android/sdk/cmdline-tools/latest/bin && yes | ./sdkmanager --licenses
+# "build-tools;34.0.0" "patcher;v4" "sources;android-34"
+RUN cd Android/sdk/cmdline-tools/latest/bin && ./sdkmanager "platform-tools" "platforms;android-34" 
+ENV PATH "$PATH:/home/developer/Android/sdk/platform-tools"
 
-## Download Android SDK
-RUN curl --output "${ANDROID_SDK_ARCHIVE}" --url "${ANDROID_SDK_URL}" \
-  && unzip -q -d "${ANDROID_SDK_ROOT}" "${ANDROID_SDK_ARCHIVE}" \
-  && rm "${ANDROID_SDK_ARCHIVE}"
+# Download Flutter SDK
+RUN git clone https://github.com/flutter/flutter.git
+ENV PATH "$PATH:/home/developer/flutter/bin"
 
-## Download tools and accept 
-RUN yes "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager "tools" \
-  "platform-tools" \
-  "extras;android;m2repository" \
-  "extras;google;m2repository" \
-  "patcher;v4" 
-
-## Download and accept platform-tools 
-ARG ANDROID_SDK_MAJOR=34
-RUN yes "y" | ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager "platforms;android-${ANDROID_SDK_MAJOR}" 
-
-## Download and accept build-tools
-ARG ANDROID_SDK_MINOR=0
-ARG ANDROID_SDK_PATCH=3
-ARG ANDROID_SDK_VERSION="${ANDROID_SDK_MAJOR}.${ANDROID_SDK_MINOR}.${ANDROID_SDK_PATCH}"
-RUN yes "y" | ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager "build-tools;${ANDROID_SDK_VERSION}" 
-
-## Setting Flutter Variables
-ARG FLUTTER_SDK_CHANNEL="stable"
-ARG FLUTTER_SDK_VERSION="3.19.3"
-ENV FLUTTER_ROOT="/usr/local/flutter"
-ENV FLUTTER_SDK_ARCHIVE="/tmp/flutter.tar.xz"
-ENV FLUTTER_SDK_URL="https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_${FLUTTER_SDK_VERSION}-${FLUTTER_SDK_CHANNEL}.tar.xz"
-
-## Download Flutter SDK
-RUN curl --output "${FLUTTER_SDK_ARCHIVE}" --url "${FLUTTER_SDK_URL}" \
-  && tar --extract --file="${FLUTTER_SDK_ARCHIVE}" --directory=$(dirname ${FLUTTER_ROOT}) \
-  && rm "${FLUTTER_SDK_ARCHIVE}" 
-
-## Setting Path and Environment variables
-
-### Add android executables to path (example: adb avdmanager)
-ENV PATH="${PATH}:${ANDROID_SDK_ROOT}/tools/bin:${ANDROID_SDK_ROOT}/platform-tools:${ANDROID_SDK_ROOT}/build-toos/${ANDROID_SDK_VERSION}"
-
-### Add flutter executable to path
-ENV PATH="${PATH}:${FLUTTER_ROOT}/bin"
-
-### Make it easy to use other Dart and Pub packages
-ENV DART_SDK="${FLUTTER_ROOT}/bin/cache/dart-sdk"
-ENV PUB_CACHE=${FLUTTER_ROOT}/.pub-cache
-ENV PATH="${PATH}:${DART_SDK}/bin:${PUB_CACHE}/bin"
-
-## Accepting all android licenses
-RUN yes "y" | ${FLUTTER_ROOT}/bin/flutter doctor --android-licenses \
-  && ${FLUTTER_ROOT}/bin/flutter doctor
-
-## Switch to flutters master channel
-RUN flutter channel master
+# Run basic check to download Dark SDK
+RUN flutter doctor
 
 ## Clear stuff
-RUN locale-gen en_US ${LANG} \
-  && dpkg-reconfigure locales \
-  && apt-get autoremove -y \
+RUN apt autoremove -y \
   && rm -rf /var/lib/apt/lists/*

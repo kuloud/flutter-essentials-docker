@@ -5,8 +5,10 @@ LABEL maintainer="xkuloud@gmail.com"
 ENV LANG en_US.UTF-8
 
 # Update & Install basics
-RUN apt-get update
-RUN yes | apt-get install \
+RUN apt update
+RUN yes | apt install curl gnupg
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash
+RUN yes | apt install \
   locales \
   libstdc++6 \
   lib32stdc++6 \
@@ -16,21 +18,26 @@ RUN yes | apt-get install \
   rubygems \
   nodejs \
   npm
-  
+
+RUN node -v \
+  && npm -v
+
 # Install fastlane
-# RUN gem install fastlane -NV \
-#   && fastlane --version
+RUN gem install fastlane -NV \
+  && fastlane --version
 
 # Install firebase cli
-# RUN npm install -g firebase-tools \
-#   && firebase --version
+RUN npm install -g firebase-tools \
+  && firebase --version
 
 
 # Install Flutter
 
 ## Setting variables for android download
-ARG ANDROID_SDK_TOOLS="8092744"
-ENV ANDROID_SDK_URL="https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip"
+# ${ANDROID_SDK_TOOLS}
+# https://dl.google.com/android/repository/sdk-tools-linux-8092744.zip
+ARG ANDROID_SDK_TOOLS="11076708"
+ENV ANDROID_SDK_URL="https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip"
 ENV ANDROID_SDK_ROOT="/usr/local/android"
 ENV ANDROID_SDK_ARCHIVE="/tmp/android.zip"
 
@@ -40,14 +47,14 @@ RUN curl --output "${ANDROID_SDK_ARCHIVE}" --url "${ANDROID_SDK_URL}" \
   && rm "${ANDROID_SDK_ARCHIVE}"
 
 ## Download tools and accept 
-RUN yes "y" | ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager "tools" \
+RUN yes "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager "tools" \
   "platform-tools" \
   "extras;android;m2repository" \
   "extras;google;m2repository" \
   "patcher;v4" 
 
 ## Download and accept platform-tools 
-ARG ANDROID_SDK_MAJOR=31
+ARG ANDROID_SDK_MAJOR=34
 RUN yes "y" | ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager "platforms;android-${ANDROID_SDK_MAJOR}" 
 
 ## Download and accept build-tools

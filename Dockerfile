@@ -22,7 +22,8 @@ RUN unzip commandlinetools.zip && rm commandlinetools.zip
 RUN mv cmdline-tools Android/sdk/cmdline-tools/latest
 RUN cd Android/sdk/cmdline-tools/latest/bin && yes | ./sdkmanager --licenses
 # "build-tools;34.0.0" "patcher;v4" "sources;android-34"
-RUN cd Android/sdk/cmdline-tools/latest/bin && ./sdkmanager "build-tools;34.0.0" "patcher;v4" "platform-tools" "platforms;android-34" 
+RUN cd Android/sdk/cmdline-tools/latest/bin && ./sdkmanager "platform-tools" "platforms;android-34" 
+RUN cd Android/sdk/cmdline-tools/latest/bin && ./sdkmanager --install "build-tools;34.0.0" "patcher;v4"
 ENV PATH "$PATH:/home/developer/Android/sdk/platform-tools"
 
 # Download Flutter SDK

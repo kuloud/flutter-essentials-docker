@@ -2,7 +2,19 @@ FROM ubuntu:22.04
 LABEL maintainer="kuloud(xkuloud@gmail.com)"
 
 # Prerequisites
-RUN apt update && apt install -y curl git unzip xz-utils zip libglu1-mesa openjdk-17-jdk wget clang cmake ninja-build pkg-config
+RUN apt update && apt install -y curl \
+    git \
+    unzip \
+    xz-utils \
+    zip \
+    libglu1-mesa \
+    openjdk-17-jdk \
+    wget \
+    clang \
+    cmake \
+    ninja-build \
+    pkg-config \
+    libgtk-3-dev
 
 # Set up new user
 RUN useradd -ms /bin/bash developer
@@ -23,7 +35,11 @@ RUN mv cmdline-tools Android/sdk/cmdline-tools/latest
 RUN cd Android/sdk/cmdline-tools/latest/bin && yes | ./sdkmanager --licenses
 RUN cd Android/sdk/cmdline-tools/latest/bin && yes | ./sdkmanager --list
 # "build-tools;34.0.0" "patcher;v4" "sources;android-34"
-RUN cd Android/sdk/cmdline-tools/latest/bin && ./sdkmanager "tools" "build-tools;34.0.0" "platform-tools" "platforms;android-34" 
+RUN cd Android/sdk/cmdline-tools/latest/bin && ./sdkmanager \
+    "tools" \
+    "build-tools;34.0.0" \
+    "platform-tools" \
+    "platforms;android-34" 
 ENV PATH "$PATH:/home/developer/Android/sdk/tools:/home/developer/Android/sdk/platform-tools"
 
 # Download Flutter SDK
